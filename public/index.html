@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        #display {
+            height: 100px;
+            width: 200px;
+            border: 1px solid black;
+            background-color: wheat;
+            color: black;
+            margin: 10px;
+        }
+    </style>
+    <title>Document</title>
+</head>
+<body>
+    <h1>node chat app</h1>
+    <form action="" id="form">
+        <label for="">Message</label>
+        <input type="text" name="messageInput" id="input">
+        <button id="submit-button">Submit</button>
+        <button id="location">Get Location</button>
+        <div id="display"></div>
+    </form>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="js/chat.js"></script>
+</body>
+</html>

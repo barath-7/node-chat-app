@@ -1,31 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         #display {
-            height: 100px;
-            width: 200px;
             border: 1px solid black;
-            background-color: wheat;
+            background-color: whitesmoke;
             color: black;
             margin: 10px;
+            border-radius: 5px;
+            font-size: medium;
+            font-family: sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        #time-stamp {
+            font-size: 10px;
+            font-weight: bold;
+            color: rgb(110, 110, 110);
         }
     </style>
     <title>Document</title>
 </head>
+
 <body>
     <h1>node chat app</h1>
+    <div id="display"></div>
     <form action="" id="form">
         <label for="">Message</label>
         <input type="text" name="messageInput" id="input">
         <button id="submit-button">Submit</button>
-        <button id="location">Get Location</button>
-        <div id="display"></div>
+        <button id="location">Get Location</button>   
     </form>
+    <script id="message-template" type="text/html">
+        <div>
+            <p>{{message}} <span id="time-stamp">{{time}}</span></p>
+           
+        </div>
+    </script>
+    <script id="location-template">
+        
+        <p><a href="{{locationMessage}}" target="_blank">My Current Location</a></p>
+       
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/3.0.1/mustache.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.6.0/qs.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="js/chat.js"></script>
 </body>
+
 </html>

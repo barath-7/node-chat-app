@@ -8,20 +8,24 @@ let submitButton = document.getElementById("submit-button");
 let messageTemplate = document.querySelector("#message-template").innerHTML;
 let locationTemplate = document.querySelector("#location-template").innerHTML;
 
+let {username,room} = Qs.parse(location.search,{ignoreQueryPrefix:true})
+
+
 socket.on("message", (message) => {
   // console.log(welcomeMsg)
 //  display.innerHTML = welcomeMsg;
 let html = Mustache.render(messageTemplate,{
     message:message.text,
     // time:message.createdAt
-    time:moment(message.createdAt).format('h:mm a')
+    time:moment(message.createdAt).format('h:mm a'),
 })
 display.insertAdjacentHTML('beforeend',html)
 
 });
 socket.on('locationMessage',(locationMessage)=>{
   let html = Mustache.render(locationTemplate,{
-    locationMessage:locationMessage
+    locationMessage:locationMessage.message,
+    time:moment(locationMessage.createdAt).format('h:mm a')
 })
 display.insertAdjacentHTML('beforeend',html)
   console.log(locationMessage)
@@ -30,9 +34,14 @@ display.insertAdjacentHTML('beforeend',html)
 
 form.addEventListener("submit", (event) => {
   event.preventDefault();
+
+  let enteredData = inputField.value;
+  if(enteredData==='' || enteredData==null || enteredData==undefined){
+    return
+  }
   submitButton.setAttribute("disabled", "disabled");
   //let enteredData=event.target.elements.messageInput
-  let enteredData = inputField.value;
+  
   socket.emit("clientMessage", enteredData, () => {
     submitButton.removeAttribute("disabled");
     inputField.value = "";
@@ -61,3 +70,5 @@ getLocation.addEventListener("click", () => {
     );
   });
 });
+
+socket.emit('join',{username,room})

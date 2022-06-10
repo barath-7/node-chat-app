@@ -10,6 +10,7 @@ const {
   genereateMessage,
   generateLocationMessage,
 } = require("./utils/message");
+const { addUser, removeUser } = require("./utils/users");
 
 const server = http.createServer(app);
 const io = socketio(server);
@@ -22,10 +23,15 @@ io.on("connection", (socket) => {
 console.log("web socket connection");
 
   
-  socket.on("join", ({ username, room }) => {
-    socket.join(room);
+  socket.on("join", ({ username, room },callback) => {
+    const {error,user}=addUser({id:socket.id,username,room})
+    if(error){
+      return callback(error)
+    }
+    socket.join(user.room);
     socket.emit("message", genereateMessage("Welcome!"));
-  socket.broadcast.to(room).emit("message", genereateMessage(`${username} has joined`));
+  socket.broadcast.to(user.room).emit("message", genereateMessage(`${user.username} has joined`));
+  callback()
   });
   socket.on("clientMessage", (clientMessage, callback) => {
     io.to('chat').emit("message", genereateMessage(clientMessage));
@@ -37,7 +43,11 @@ console.log("web socket connection");
     callback();
   });
   socket.on("disconnect", () => {
-    io.emit("message", genereateMessage("user has left"));
+   const user= removeUser(socket.id)
+   if(user){
+     io.to(user.room).emit("message", genereateMessage(`${user.username} has left`));
+
+   }
   });
 });
 

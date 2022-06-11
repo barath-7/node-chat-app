@@ -11,7 +11,20 @@ let sidebarTemplate = document.querySelector("#sidebar-template").innerHTML;
 
 let {username,room} = Qs.parse(location.search,{ignoreQueryPrefix:true})
 
+const autoscroll = ()=>{
+let newMessage = display.lastElementChild
+let newMessageStyle = getComputedStyle(newMessage)
+let newMessageMargin = parseInt(newMessageStyle.marginBottom)
+let newMessageHeight = newMessage.offsetHeight+newMessageMargin
 
+let visibleHeight = display.offsetHeight
+let containerHeight = display.scrollHeight
+let scrollOffset = display.scrollTop + visibleHeight
+
+if(containerHeight-newMessageHeight<=scrollOffset){
+  display.scrollTop=display.scrollHeight
+}
+}
 socket.on("message", (message) => {
   // console.log(welcomeMsg)
 //  display.innerHTML = welcomeMsg;
@@ -22,6 +35,7 @@ let html = Mustache.render(messageTemplate,{
     username:message.username
 })
 display.insertAdjacentHTML('beforeend',html)
+autoscroll()
 
 });
 socket.on('locationMessage',(locationMessage)=>{
@@ -31,7 +45,7 @@ socket.on('locationMessage',(locationMessage)=>{
     username:locationMessage.username
 })
 display.insertAdjacentHTML('beforeend',html)
-  console.log(locationMessage)
+  autoscroll()
 })
 
 
@@ -49,7 +63,6 @@ form.addEventListener("submit", (event) => {
     submitButton.removeAttribute("disabled");
     inputField.value = "";
     inputField.focus();
-    console.log("message delivered");
   });
 });
 

@@ -10,7 +10,7 @@ const {
   genereateMessage,
   generateLocationMessage,
 } = require("./utils/message");
-const { addUser, removeUser } = require("./utils/users");
+const { addUser, removeUser, getUser, getUsersInRoom } = require("./utils/users");
 
 const server = http.createServer(app);
 const io = socketio(server);
@@ -20,34 +20,47 @@ const iconPath = path.join(__dirname, "../public/img");
 app.use(express.static(iconPath));
 app.use(express.static("public"));
 io.on("connection", (socket) => {
-console.log("web socket connection");
+  console.log("web socket connection");
 
-  
-  socket.on("join", ({ username, room },callback) => {
-    const {error,user}=addUser({id:socket.id,username,room})
-    if(error){
-      return callback(error)
+  socket.on("join", ({ username, room }, callback) => {
+    const { error, user } = addUser({ id: socket.id, username, room });
+    if (error) {
+      return callback(error);
     }
     socket.join(user.room);
     socket.emit("message", genereateMessage("Welcome!"));
-  socket.broadcast.to(user.room).emit("message", genereateMessage(`${user.username} has joined`));
-  callback()
+    socket.broadcast
+      .to(user.room)
+      .emit("message", genereateMessage(`${user.username} has joined`));
+      io.to(user.room).emit('roomData',{
+        room:user.room,
+        users:getUsersInRoom(user.room)
+      })
+    callback();
   });
   socket.on("clientMessage", (clientMessage, callback) => {
-    io.to('chat').emit("message", genereateMessage(clientMessage));
+    const user = getUser(socket.id);
+    io.to(user.room).emit("message", genereateMessage(user.username,clientMessage));
     callback();
   });
 
   socket.on("sendLocation", (clientLocation, callback) => {
-    io.emit("locationMessage", generateLocationMessage(clientLocation));
+    const user = getUser(socket.id);
+    io.to(user.room).emit("locationMessage", generateLocationMessage(user.username,clientLocation));
     callback();
   });
   socket.on("disconnect", () => {
-   const user= removeUser(socket.id)
-   if(user){
-     io.to(user.room).emit("message", genereateMessage(`${user.username} has left`));
-
-   }
+    const user = removeUser(socket.id);
+    if (user) {
+      io.to(user.room).emit(
+        "message",
+        genereateMessage(`${user.username} has left`)
+      );
+      io.to(user.room).emit('roomData',{
+        room:user.room,
+        users:getUsersInRoom(user.room)
+      })
+    }
   });
 });
 

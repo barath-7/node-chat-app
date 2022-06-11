@@ -7,6 +7,7 @@ let getLocation = document.getElementById("location");
 let submitButton = document.getElementById("submit-button");
 let messageTemplate = document.querySelector("#message-template").innerHTML;
 let locationTemplate = document.querySelector("#location-template").innerHTML;
+let sidebarTemplate = document.querySelector("#sidebar-template").innerHTML;
 
 let {username,room} = Qs.parse(location.search,{ignoreQueryPrefix:true})
 
@@ -18,6 +19,7 @@ let html = Mustache.render(messageTemplate,{
     message:message.text,
     // time:message.createdAt
     time:moment(message.createdAt).format('h:mm a'),
+    username:message.username
 })
 display.insertAdjacentHTML('beforeend',html)
 
@@ -25,7 +27,8 @@ display.insertAdjacentHTML('beforeend',html)
 socket.on('locationMessage',(locationMessage)=>{
   let html = Mustache.render(locationTemplate,{
     locationMessage:locationMessage.message,
-    time:moment(locationMessage.createdAt).format('h:mm a')
+    time:moment(locationMessage.createdAt).format('h:mm a'),
+    username:locationMessage.username
 })
 display.insertAdjacentHTML('beforeend',html)
   console.log(locationMessage)
@@ -50,6 +53,13 @@ form.addEventListener("submit", (event) => {
   });
 });
 
+socket.on('roomData',({room,users})=>{
+  let html =Mustache.render(sidebarTemplate,{
+    room,
+    users
+  })
+  document.querySelector('#sidebar').innerHTML=html
+})
 
 getLocation.addEventListener("click", () => {
   if (!navigator.geolocation) {

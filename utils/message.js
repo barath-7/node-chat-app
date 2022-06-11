@@ -1,11 +1,21 @@
-const genereateMessage = (text) =>{
-    return {
-        text,
-        // createdAt:new Date().toLocaleTimeString()
-        createdAt:new Date().getTime()
-    }
-}
+const genereateMessage = (username, text) => {
+  return {
+    username,
+    text,
+    // createdAt:new Date().toLocaleTimeString()
+    createdAt: new Date().getTime(),
+  };
+};
 
-module.exports={
-    genereateMessage
-}
+const generateLocationMessage = (username, location) => {
+  return {
+    username,
+    location,
+    createdAt: new Date().getTime(),
+  };
+};
+
+module.exports = {
+  genereateMessage,
+  generateLocationMessage,
+};

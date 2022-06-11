@@ -1,4 +1,4 @@
-const users = [];
+let users = [];
 
 //add user
 
@@ -27,8 +27,6 @@ const addUser = ({ username, room, id }) => {
   return { user };
 };
 
-
-
 //remove user
 
 const removeUser = (id) => {
@@ -50,7 +48,6 @@ const getUser = (id) => {
 const getUsersInRoom = (room) => {
   return users.filter((user) => user.room === room);
 };
-
 module.exports = {
   addUser,
   removeUser,

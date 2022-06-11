@@ -5,12 +5,16 @@ const app = express();
 const socketio = require("socket.io");
 const { Server } = require("socket.io");
 require("dotenv").config();
-require("./dummy_test"); // dummy file to test out things
 const {
   genereateMessage,
   generateLocationMessage,
 } = require("./utils/message");
-const { addUser, removeUser, getUser, getUsersInRoom } = require("./utils/users");
+const {
+  addUser,
+  removeUser,
+  getUser,
+  getUsersInRoom,
+} = require("./utils/users");
 
 const server = http.createServer(app);
 const io = socketio(server);
@@ -32,21 +36,27 @@ io.on("connection", (socket) => {
     socket.broadcast
       .to(user.room)
       .emit("message", genereateMessage(`${user.username} has joined`));
-      io.to(user.room).emit('roomData',{
-        room:user.room,
-        users:getUsersInRoom(user.room)
-      })
+    io.to(user.room).emit("roomData", {
+      room: user.room,
+      users: getUsersInRoom(user.room),
+    });
     callback();
   });
   socket.on("clientMessage", (clientMessage, callback) => {
     const user = getUser(socket.id);
-    io.to(user.room).emit("message", genereateMessage(user.username,clientMessage));
+    io.to(user.room).emit(
+      "message",
+      genereateMessage(user.username, clientMessage)
+    );
     callback();
   });
 
   socket.on("sendLocation", (clientLocation, callback) => {
     const user = getUser(socket.id);
-    io.to(user.room).emit("locationMessage", generateLocationMessage(user.username,clientLocation));
+    io.to(user.room).emit(
+      "locationMessage",
+      generateLocationMessage(user.username, clientLocation)
+    );
     callback();
   });
   socket.on("disconnect", () => {
@@ -56,10 +66,10 @@ io.on("connection", (socket) => {
         "message",
         genereateMessage(`${user.username} has left`)
       );
-      io.to(user.room).emit('roomData',{
-        room:user.room,
-        users:getUsersInRoom(user.room)
-      })
+      io.to(user.room).emit("roomData", {
+        room: user.room,
+        users: getUsersInRoom(user.room),
+      });
     }
   });
 });
